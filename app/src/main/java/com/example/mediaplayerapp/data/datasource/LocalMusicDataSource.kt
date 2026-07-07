@@ -5,11 +5,13 @@ import android.content.Context
 import android.provider.MediaStore
 import androidx.core.net.toUri
 import com.example.mediaplayerapp.domain.model.Music
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class LocalMusicDataSource(
-    private val context: Context
+class LocalMusicDataSource @Inject constructor(
+    @ApplicationContext private val context: Context
 ) : MusicDataSource {
 
     override suspend fun getAllMusic(): List<Music> = withContext(Dispatchers.IO) {

@@ -13,15 +13,16 @@ import androidx.navigation.fragment.findNavController
 import com.example.mediaplayerapp.MainActivity
 import com.example.mediaplayerapp.R
 import com.example.mediaplayerapp.databinding.FragmentSplashBinding
-import com.example.mediaplayerapp.presentation.common.viewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SplashFragment : Fragment() {
 
     private var _binding: FragmentSplashBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: SplashViewModel by viewModels { viewModelFactory() }
+    private val viewModel: SplashViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

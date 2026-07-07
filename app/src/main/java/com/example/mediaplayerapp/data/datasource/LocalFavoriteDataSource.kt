@@ -3,13 +3,15 @@ package com.example.mediaplayerapp.data.datasource
 import android.content.Context
 import androidx.core.net.toUri
 import com.example.mediaplayerapp.domain.model.Music
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import javax.inject.Inject
 
-class LocalFavoriteDataSource(
-    context: Context
+class LocalFavoriteDataSource @Inject constructor(
+    @ApplicationContext context: Context
 ) : FavoriteDataSource {
 
     private val preferences = context.applicationContext

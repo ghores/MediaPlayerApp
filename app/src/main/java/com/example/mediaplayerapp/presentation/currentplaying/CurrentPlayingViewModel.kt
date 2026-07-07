@@ -6,13 +6,16 @@ import com.example.mediaplayerapp.domain.usecase.ObserveFavoritesUseCase
 import com.example.mediaplayerapp.domain.usecase.ToggleFavoriteUseCase
 import com.example.mediaplayerapp.player.PlaybackController
 import com.example.mediaplayerapp.player.PlaybackUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CurrentPlayingViewModel(
+@HiltViewModel
+class CurrentPlayingViewModel @Inject constructor(
     private val playbackController: PlaybackController,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     observeFavoritesUseCase: ObserveFavoritesUseCase

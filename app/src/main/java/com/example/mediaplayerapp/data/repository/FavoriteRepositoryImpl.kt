@@ -1,16 +1,18 @@
 package com.example.mediaplayerapp.data.repository
 
 import com.example.mediaplayerapp.data.datasource.FavoriteDataSource
+import com.example.mediaplayerapp.di.ApplicationScope
 import com.example.mediaplayerapp.domain.model.Music
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class FavoriteRepositoryImpl(
+class FavoriteRepositoryImpl @Inject constructor(
     private val favoriteDataSource: FavoriteDataSource,
-    scope: CoroutineScope
+    @ApplicationScope scope: CoroutineScope
 ) : FavoriteRepository {
 
     private val _favorites = MutableStateFlow<List<Music>>(emptyList())

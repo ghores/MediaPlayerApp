@@ -15,15 +15,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mediaplayerapp.R
 import com.example.mediaplayerapp.adapter.MusicAdapter
 import com.example.mediaplayerapp.databinding.FragmentFavoriteMusicBinding
-import com.example.mediaplayerapp.presentation.common.viewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class FavoriteMusicFragment : Fragment() {
 
     private var _binding: FragmentFavoriteMusicBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: FavoriteMusicViewModel by viewModels { viewModelFactory() }
+    private val viewModel: FavoriteMusicViewModel by viewModels()
     private var favoriteAdapter: MusicAdapter? = null
 
     override fun onCreateView(

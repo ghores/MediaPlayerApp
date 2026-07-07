@@ -17,21 +17,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mediaplayerapp.R
 import com.example.mediaplayerapp.adapter.MusicAdapter
 import com.example.mediaplayerapp.databinding.FragmentAllMusicBinding
-import com.example.mediaplayerapp.presentation.common.viewModelFactory
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class AllMusicFragment : Fragment() {
 
     private var _binding: FragmentAllMusicBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: AllMusicViewModel by viewModels { viewModelFactory() }
+    private val viewModel: AllMusicViewModel by viewModels()
     private var musicAdapter: MusicAdapter? = null
 
     override fun onCreateView(

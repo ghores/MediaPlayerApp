@@ -15,16 +15,17 @@ import com.example.mediaplayerapp.R
 import com.example.mediaplayerapp.databinding.FragmentCurrentPlayingBinding
 import com.example.mediaplayerapp.player.PlaybackUiState
 import com.example.mediaplayerapp.player.RepeatMode
-import com.example.mediaplayerapp.presentation.common.viewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Locale
 
+@AndroidEntryPoint
 class CurrentPlayingFragment : Fragment() {
 
     private var _binding: FragmentCurrentPlayingBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CurrentPlayingViewModel by activityViewModels { viewModelFactory() }
+    private val viewModel: CurrentPlayingViewModel by activityViewModels()
     private var isUserSeeking = false
 
     override fun onCreateView(

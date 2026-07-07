@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mediaplayerapp.domain.usecase.GetAllMusicUseCase
 import com.example.mediaplayerapp.domain.usecase.PlayMusicUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,8 +12,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AllMusicViewModel(
+@HiltViewModel
+class AllMusicViewModel @Inject constructor(
     private val getAllMusicUseCase: GetAllMusicUseCase,
     private val playMusicUseCase: PlayMusicUseCase
 ) : ViewModel() {

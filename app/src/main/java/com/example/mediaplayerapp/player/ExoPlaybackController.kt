@@ -7,6 +7,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.mediaplayerapp.domain.model.Music
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,10 +21,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.io.File
+import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
-class ExoPlaybackController(
-    context: Context
+class ExoPlaybackController @Inject constructor(
+    @ApplicationContext context: Context
 ) : PlaybackController {
 
     private val player: ExoPlayer = ExoPlayer.Builder(context.applicationContext).build()

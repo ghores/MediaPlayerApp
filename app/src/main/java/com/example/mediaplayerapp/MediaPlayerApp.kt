@@ -1,15 +1,7 @@
 package com.example.mediaplayerapp
 
 import android.app.Application
-import com.example.mediaplayerapp.di.AppContainer
+import dagger.hilt.android.HiltAndroidApp
 
-class MediaPlayerApp : Application() {
-
-    lateinit var appContainer: AppContainer
-        private set
-
-    override fun onCreate() {
-        super.onCreate()
-        appContainer = AppContainer(this)
-    }
-}
+@HiltAndroidApp
+class MediaPlayerApp : Application()

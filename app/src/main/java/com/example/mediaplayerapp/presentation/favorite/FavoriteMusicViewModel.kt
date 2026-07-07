@@ -5,12 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.example.mediaplayerapp.domain.model.Music
 import com.example.mediaplayerapp.domain.usecase.ObserveFavoritesUseCase
 import com.example.mediaplayerapp.domain.usecase.PlayMusicUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class FavoriteMusicViewModel(
+@HiltViewModel
+class FavoriteMusicViewModel @Inject constructor(
     observeFavoritesUseCase: ObserveFavoritesUseCase,
     private val playMusicUseCase: PlayMusicUseCase
 ) : ViewModel() {

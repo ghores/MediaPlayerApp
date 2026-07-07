@@ -11,7 +11,9 @@ import com.example.mediaplayerapp.databinding.FragmentViewPagerBinding
 import com.example.mediaplayerapp.presentation.allmusic.AllMusicFragment
 import com.example.mediaplayerapp.presentation.favorite.FavoriteMusicFragment
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ViewPagerFragment : Fragment() {
 
     private var _binding: FragmentViewPagerBinding? = null
