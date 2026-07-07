@@ -27,7 +27,6 @@ class SplashFragment : Fragment() {
         lifecycleScope.launch {
             delay(2000.milliseconds)
             findNavController().navigate(R.id.splashToViewPagerFragment)
-
         }
     }
 

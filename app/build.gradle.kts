@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -51,4 +53,14 @@ dependencies {
     // Navigation
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
+    //Glide
+    implementation(libs.glide)
+    //Dexter
+    implementation(libs.dexter)
+    //Playwidget
+    implementation(libs.play.widget)
+    // ExoPlayer (Media3)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.session)
 }
