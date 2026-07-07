@@ -7,21 +7,21 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.example.mediaplayerapp.SplashFragment"
+        android:name="com.example.mediaplayerapp.fragment.SplashFragment"
         android:label="fragment_splash"
         tools:layout="@layout/fragment_splash" >
         <action
-            android:id="@+id/action_splashFragment_to_viewPagerFragment"
+            android:id="@+id/splashToViewPagerFragment"
             app:destination="@id/viewPagerFragment" />
     </fragment>
     <fragment
         android:id="@+id/viewPagerFragment"
-        android:name="com.example.mediaplayerapp.ViewPagerFragment"
+        android:name="com.example.mediaplayerapp.fragment.ViewPagerFragment"
         android:label="fragment_view_pager"
         tools:layout="@layout/fragment_view_pager" />
     <fragment
         android:id="@+id/allMusicFragment"
-        android:name="com.example.mediaplayerapp.AllMusicFragment"
+        android:name="com.example.mediaplayerapp.fragment.AllMusicFragment"
         android:label="fragment_all_music"
         tools:layout="@layout/fragment_all_music" >
         <action
@@ -30,7 +30,7 @@
     </fragment>
     <fragment
         android:id="@+id/favoriteMusicFragment"
-        android:name="com.example.mediaplayerapp.FavoriteMusicFragment"
+        android:name="com.example.mediaplayerapp.fragment.FavoriteMusicFragment"
         android:label="fragment_favorite_music"
         tools:layout="@layout/fragment_favorite_music" >
         <action
@@ -39,7 +39,7 @@
     </fragment>
     <fragment
         android:id="@+id/currentPlayingFragment"
-        android:name="com.example.mediaplayerapp.CurrentPlayingFragment"
+        android:name="com.example.mediaplayerapp.fragment.CurrentPlayingFragment"
         android:label="fragment_current_playing"
         tools:layout="@layout/fragment_current_playing" />
 </navigation>
