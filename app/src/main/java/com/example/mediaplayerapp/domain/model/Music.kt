@@ -1,4 +1,4 @@
-package com.example.mediaplayerapp.model
+package com.example.mediaplayerapp.domain.model
 
 import android.net.Uri
 

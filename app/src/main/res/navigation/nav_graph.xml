@@ -7,39 +7,49 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.example.mediaplayerapp.fragment.SplashFragment"
+        android:name="com.example.mediaplayerapp.presentation.splash.SplashFragment"
         android:label="fragment_splash"
-        tools:layout="@layout/fragment_splash" >
+        tools:layout="@layout/fragment_splash">
         <action
             android:id="@+id/splashToViewPagerFragment"
-            app:destination="@id/viewPagerFragment" />
+            app:destination="@id/viewPagerFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
     </fragment>
+
     <fragment
         android:id="@+id/viewPagerFragment"
-        android:name="com.example.mediaplayerapp.fragment.ViewPagerFragment"
+        android:name="com.example.mediaplayerapp.presentation.viewpager.ViewPagerFragment"
         android:label="fragment_view_pager"
-        tools:layout="@layout/fragment_view_pager" />
+        tools:layout="@layout/fragment_view_pager">
+        <action
+            android:id="@+id/action_viewPagerFragment_to_currentPlayingFragment"
+            app:destination="@id/currentPlayingFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/allMusicFragment"
-        android:name="com.example.mediaplayerapp.fragment.AllMusicFragment"
+        android:name="com.example.mediaplayerapp.presentation.allmusic.AllMusicFragment"
         android:label="fragment_all_music"
-        tools:layout="@layout/fragment_all_music" >
+        tools:layout="@layout/fragment_all_music">
         <action
             android:id="@+id/action_allMusicFragment_to_currentPlayingFragment"
             app:destination="@id/currentPlayingFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/favoriteMusicFragment"
-        android:name="com.example.mediaplayerapp.fragment.FavoriteMusicFragment"
+        android:name="com.example.mediaplayerapp.presentation.favorite.FavoriteMusicFragment"
         android:label="fragment_favorite_music"
-        tools:layout="@layout/fragment_favorite_music" >
+        tools:layout="@layout/fragment_favorite_music">
         <action
             android:id="@+id/action_favoriteMusicFragment_to_currentPlayingFragment"
             app:destination="@id/currentPlayingFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/currentPlayingFragment"
-        android:name="com.example.mediaplayerapp.fragment.CurrentPlayingFragment"
+        android:name="com.example.mediaplayerapp.presentation.currentplaying.CurrentPlayingFragment"
         android:label="fragment_current_playing"
         tools:layout="@layout/fragment_current_playing" />
 </navigation>

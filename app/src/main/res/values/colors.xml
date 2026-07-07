@@ -3,6 +3,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="b1">#ff0ca4e0</color>
-    <color name="b2">#1344f5</color>
+    <color name="b2">#10246D</color>
+    <color name="orange">#FF5722</color>
     <color name="gray">#A2A2A2</color>
+    <color name="splash_background_start">#FF0B1020</color>
+    <color name="splash_background_end">#FF101B3D</color>
 </resources>
