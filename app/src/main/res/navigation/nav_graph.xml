@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.mediaplayerapp.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_viewPagerFragment"
+            app:destination="@id/viewPagerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewPagerFragment"
+        android:name="com.example.mediaplayerapp.ViewPagerFragment"
+        android:label="fragment_view_pager"
+        tools:layout="@layout/fragment_view_pager" />
+    <fragment
+        android:id="@+id/allMusicFragment"
+        android:name="com.example.mediaplayerapp.AllMusicFragment"
+        android:label="fragment_all_music"
+        tools:layout="@layout/fragment_all_music" >
+        <action
+            android:id="@+id/action_allMusicFragment_to_currentPlayingFragment"
+            app:destination="@id/currentPlayingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoriteMusicFragment"
+        android:name="com.example.mediaplayerapp.FavoriteMusicFragment"
+        android:label="fragment_favorite_music"
+        tools:layout="@layout/fragment_favorite_music" >
+        <action
+            android:id="@+id/action_favoriteMusicFragment_to_currentPlayingFragment"
+            app:destination="@id/currentPlayingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/currentPlayingFragment"
+        android:name="com.example.mediaplayerapp.CurrentPlayingFragment"
+        android:label="fragment_current_playing"
+        tools:layout="@layout/fragment_current_playing" />
+</navigation>
