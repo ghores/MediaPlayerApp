@@ -1,12 +1,16 @@
 package com.example.mediaplayerapp.player
 
+import android.content.ComponentName
 import android.content.Context
 import android.net.Uri
+import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
 import com.example.mediaplayerapp.domain.model.Music
+import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,179 +26,146 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.time.Duration.Companion.milliseconds
 
+@Singleton
 class ExoPlaybackController @Inject constructor(
     @ApplicationContext context: Context
 ) : PlaybackController {
 
-    private val player: ExoPlayer = ExoPlayer.Builder(context.applicationContext).build()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private var playlist: List<Music> = emptyList()
-    private var currentIndex: Int = -1
     private var progressJob: Job? = null
+    private var pendingPlay: PendingPlay? = null
 
-    private var isShuffleEnabled: Boolean = false
-    private var repeatMode: RepeatMode = RepeatMode.OFF
+    private var controller: MediaController? = null
+    private val controllerFuture: ListenableFuture<MediaController>
 
     private val _playbackState = MutableStateFlow(PlaybackUiState())
     override val playbackState: StateFlow<PlaybackUiState> = _playbackState.asStateFlow()
 
     init {
-        player.addListener(object : Player.Listener {
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                updatePlaybackState(isPlaying = isPlaying)
-                if (isPlaying) {
-                    startProgressUpdates()
-                } else {
-                    stopProgressUpdates()
-                }
-            }
+        val token = SessionToken(context, ComponentName(context, MusicService::class.java))
+        controllerFuture = MediaController.Builder(context, token).buildAsync()
+        controllerFuture.addListener(
+            { onControllerReady(controllerFuture.get()) },
+            ContextCompat.getMainExecutor(context)
+        )
+    }
 
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_ENDED) {
-                    handleTrackEnded()
-                }
-            }
-        })
+    private fun onControllerReady(mediaController: MediaController) {
+        controller = mediaController
+        mediaController.addListener(playerListener)
+
+        pendingPlay?.let { play(it.playlist, it.startIndex) }
+        pendingPlay = null
+
+        updatePlaybackState()
+        if (mediaController.isPlaying) startProgressUpdates()
+    }
+
+    private val playerListener = object : Player.Listener {
+        override fun onEvents(player: Player, events: Player.Events) {
+            updatePlaybackState()
+        }
+
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            if (isPlaying) startProgressUpdates() else stopProgressUpdates()
+        }
     }
 
     override fun play(playlist: List<Music>, startIndex: Int) {
         if (playlist.isEmpty()) return
 
-        this.playlist = playlist
-        currentIndex = startIndex.coerceIn(0, playlist.lastIndex)
-        prepareAndPlay()
-    }
-
-    override fun togglePlayPause() {
-        if (player.isPlaying) {
-            player.pause()
+        val activeController = controller
+        if (activeController == null) {
+            pendingPlay = PendingPlay(playlist, startIndex)
             return
         }
 
-        if (player.playbackState == Player.STATE_IDLE && currentMusic != null) {
-            prepareAndPlay()
-        } else {
-            player.play()
+        this.playlist = playlist
+        val index = startIndex.coerceIn(0, playlist.lastIndex)
+        activeController.setMediaItems(playlist.map { it.toMediaItem() }, index, 0L)
+        activeController.prepare()
+        activeController.play()
+        updatePlaybackState()
+    }
+
+    override fun togglePlayPause() {
+        val activeController = controller ?: return
+        when {
+            activeController.isPlaying -> activeController.pause()
+            activeController.playbackState == Player.STATE_IDLE -> {
+                activeController.prepare()
+                activeController.play()
+            }
+
+            activeController.playbackState == Player.STATE_ENDED -> {
+                activeController.seekToDefaultPosition(0)
+                activeController.play()
+            }
+
+            else -> activeController.play()
         }
     }
 
     override fun playNext() {
-        if (playlist.isEmpty()) return
-
-        currentIndex = nextIndex()
-        prepareAndPlay()
+        controller?.seekToNext()
     }
 
     override fun playPrevious() {
-        if (playlist.isEmpty()) return
-
-        if (player.currentPosition > SKIP_TO_START_THRESHOLD_MS) {
-            player.seekTo(0)
-            updatePlaybackState()
-            return
-        }
-
-        currentIndex = if (currentIndex - 1 < 0) playlist.lastIndex else currentIndex - 1
-        prepareAndPlay()
+        controller?.seekToPrevious()
     }
 
     override fun seekTo(progressFraction: Float) {
-        val duration = player.duration
+        val activeController = controller ?: return
+        val duration = activeController.duration
         if (duration <= 0L) return
 
         val positionMs = (duration * progressFraction.coerceIn(0f, 1f)).toLong()
-        player.seekTo(positionMs)
-        updatePlaybackState(progressFraction = progressFraction)
+        activeController.seekTo(positionMs)
+        updatePlaybackState()
     }
 
     override fun toggleShuffle() {
-        isShuffleEnabled = !isShuffleEnabled
-        updatePlaybackState()
+        val activeController = controller ?: return
+        activeController.shuffleModeEnabled = !activeController.shuffleModeEnabled
     }
 
     override fun cycleRepeatMode() {
-        repeatMode = repeatMode.next()
-        updatePlaybackState()
+        val activeController = controller ?: return
+        val nextMode = activeController.repeatMode.toRepeatMode().next()
+        activeController.repeatMode = nextMode.toPlayerRepeatMode()
     }
 
     override fun release() {
         stopProgressUpdates()
+        controller?.removeListener(playerListener)
+        controller = null
+        MediaController.releaseFuture(controllerFuture)
         scope.cancel()
-        player.release()
     }
 
-    private val currentMusic: Music?
-        get() = playlist.getOrNull(currentIndex)
+    private fun updatePlaybackState() {
+        val activeController = controller ?: return
 
-    private fun handleTrackEnded() {
-        if (playlist.isEmpty()) return
+        val music = playlist.getOrNull(activeController.currentMediaItemIndex)
+        val durationMs = activeController.duration.takeIf { it > 0L } ?: 0L
+        val positionMs = activeController.currentPosition.coerceAtLeast(0L)
+        val progressFraction =
+            if (durationMs > 0L) (positionMs.toFloat() / durationMs).coerceIn(0f, 1f) else 0f
 
-        when (repeatMode) {
-            RepeatMode.REPEAT_ONE -> {
-                player.seekTo(0)
-                player.play()
-            }
-
-            RepeatMode.REPEAT_ALL -> {
-                currentIndex = nextIndex()
-                prepareAndPlay()
-            }
-
-            RepeatMode.OFF -> {
-                if (isShuffleEnabled) {
-                    currentIndex = nextIndex()
-                    prepareAndPlay()
-                } else if (currentIndex < playlist.lastIndex) {
-                    currentIndex++
-                    prepareAndPlay()
-                } else {
-                    player.seekTo(0)
-                    player.pause()
-                    updatePlaybackState(isPlaying = false, progressFraction = 0f)
-                }
-            }
-        }
-    }
-
-    private fun nextIndex(): Int {
-        if (isShuffleEnabled && playlist.size > 1) {
-            var candidate = currentIndex
-            while (candidate == currentIndex) {
-                candidate = playlist.indices.random()
-            }
-            return candidate
-        }
-        return (currentIndex + 1) % playlist.size
-    }
-
-    private fun prepareAndPlay() {
-        val music = currentMusic ?: return
-
-        player.setMediaItem(music.toMediaItem())
-        player.prepare()
-        player.play()
-        updatePlaybackState(currentMusic = music, isPlaying = true)
-    }
-
-    private fun updatePlaybackState(
-        currentMusic: Music? = this.currentMusic,
-        isPlaying: Boolean = player.isPlaying,
-        progressFraction: Float = calculateProgressFraction()
-    ) {
-        val durationMs = player.duration.takeIf { it > 0L } ?: 0L
-        val positionMs = player.currentPosition.coerceAtLeast(0L)
         _playbackState.update {
-            it.copy(
-                currentMusic = currentMusic,
-                isPlaying = isPlaying,
+            PlaybackUiState(
+                currentMusic = music,
+                isPlaying = activeController.isPlaying,
                 progressFraction = progressFraction,
                 currentPositionMs = positionMs,
                 durationMs = durationMs,
-                isShuffleEnabled = isShuffleEnabled,
-                repeatMode = repeatMode
+                isShuffleEnabled = activeController.shuffleModeEnabled,
+                repeatMode = activeController.repeatMode.toRepeatMode()
             )
         }
     }
@@ -214,27 +185,37 @@ class ExoPlaybackController @Inject constructor(
         progressJob = null
     }
 
-    private fun calculateProgressFraction(): Float {
-        val duration = player.duration
-        if (duration <= 0L) return 0f
-        return player.currentPosition.toFloat() / duration
+    private fun Int.toRepeatMode(): RepeatMode = when (this) {
+        Player.REPEAT_MODE_ONE -> RepeatMode.REPEAT_ONE
+        Player.REPEAT_MODE_ALL -> RepeatMode.REPEAT_ALL
+        else -> RepeatMode.OFF
     }
 
-    private fun Music.toMediaItem(): MediaItem {
-        return MediaItem.Builder()
-            .setUri(Uri.fromFile(File(filePath)))
-            .setMediaMetadata(
-                MediaMetadata.Builder()
-                    .setTitle(title)
-                    .setArtist(singerName)
-                    .setAlbumTitle(albumName)
-                    .build()
-            )
-            .build()
+    private fun RepeatMode.toPlayerRepeatMode(): Int = when (this) {
+        RepeatMode.OFF -> Player.REPEAT_MODE_OFF
+        RepeatMode.REPEAT_ALL -> Player.REPEAT_MODE_ALL
+        RepeatMode.REPEAT_ONE -> Player.REPEAT_MODE_ONE
     }
+
+    private fun Music.toMediaItem(): MediaItem = MediaItem.Builder()
+        .setMediaId(filePath)
+        .setUri(Uri.fromFile(File(filePath)))
+        .setMediaMetadata(
+            MediaMetadata.Builder()
+                .setTitle(title)
+                .setArtist(singerName)
+                .setAlbumTitle(albumName)
+                .setArtworkUri(coverArtUri)
+                .build()
+        )
+        .build()
+
+    private data class PendingPlay(
+        val playlist: List<Music>,
+        val startIndex: Int
+    )
 
     private companion object {
-        const val SKIP_TO_START_THRESHOLD_MS = 3_000L
         const val PROGRESS_UPDATE_INTERVAL_MS = 500L
     }
 }

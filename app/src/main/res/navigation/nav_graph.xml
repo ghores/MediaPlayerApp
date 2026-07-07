@@ -48,6 +48,22 @@
     </fragment>
 
     <fragment
+        android:id="@+id/folderSongsFragment"
+        android:name="com.example.mediaplayerapp.presentation.folders.FolderSongsFragment"
+        android:label="fragment_folder_songs"
+        tools:layout="@layout/fragment_folder_songs">
+        <argument
+            android:name="folderPath"
+            app:argType="string" />
+        <argument
+            android:name="folderName"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_folderSongsFragment_to_currentPlayingFragment"
+            app:destination="@id/currentPlayingFragment" />
+    </fragment>
+
+    <fragment
         android:id="@+id/currentPlayingFragment"
         android:name="com.example.mediaplayerapp.presentation.currentplaying.CurrentPlayingFragment"
         android:label="fragment_current_playing"

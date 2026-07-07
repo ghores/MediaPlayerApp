@@ -10,6 +10,7 @@ import com.example.mediaplayerapp.adapter.ViewPagerAdapter
 import com.example.mediaplayerapp.databinding.FragmentViewPagerBinding
 import com.example.mediaplayerapp.presentation.allmusic.AllMusicFragment
 import com.example.mediaplayerapp.presentation.favorite.FavoriteMusicFragment
+import com.example.mediaplayerapp.presentation.folders.FoldersFragment
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,13 +36,14 @@ class ViewPagerFragment : Fragment() {
 
     private fun setupViewPager() {
         val adapter = ViewPagerAdapter(
-            mutableListOf(AllMusicFragment(), FavoriteMusicFragment()),
+            mutableListOf(AllMusicFragment(), FoldersFragment(), FavoriteMusicFragment()),
             childFragmentManager,
             viewLifecycleOwner.lifecycle
         )
 
         binding.viewPager.adapter = adapter
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("تمامی آهنگ ها"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("پوشه‌ها"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("آهنگ های مورد علاقه"))
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {

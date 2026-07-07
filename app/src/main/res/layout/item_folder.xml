@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:padding="14dp">
+
+    <ImageView
+        android:id="@+id/folderIcon"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:contentDescription="@string/folders"
+        android:src="@drawable/ic_folder"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/b1" />
+
+    <TextView
+        android:id="@+id/folderName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:ellipsize="middle"
+        android:maxLines="1"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@id/folderCount"
+        app:layout_constraintStart_toEndOf="@id/folderIcon"
+        app:layout_constraintTop_toTopOf="@id/folderIcon"
+        tools:text="Music" />
+
+    <TextView
+        android:id="@+id/folderPath"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:ellipsize="middle"
+        android:maxLines="1"
+        android:textColor="@color/gray"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@id/folderCount"
+        app:layout_constraintStart_toEndOf="@id/folderIcon"
+        app:layout_constraintTop_toBottomOf="@id/folderName"
+        tools:text="/storage/emulated/0/Music" />
+
+    <TextView
+        android:id="@+id/folderCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/b1"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="12 آهنگ" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,4 +4,7 @@
     <string name="cover">Cover</string>
     <string name="favorite">افزودن به علاقه‌مندی‌ها</string>
     <string name="no_favorites">هنوز آهنگی به علاقه‌مندی‌ها اضافه نشده</string>
+    <string name="folders">پوشه‌ها</string>
+    <string name="no_folders">پوشه‌ای پیدا نشد</string>
+    <string name="folder_song_count">%d آهنگ</string>
 </resources>
